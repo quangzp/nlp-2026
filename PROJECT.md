@@ -25,6 +25,7 @@ Xây dựng và **đánh giá** một hệ thống phát hiện + sửa lỗi ch
    - **Over-correction rate**: tỷ lệ âm tiết vốn đã đúng nhưng bị mô hình sửa nhầm (rất quan trọng vì VSEC không có câu hoàn toàn đúng để học điều này).
 
 Các hướng mở rộng (tùy thời gian, không bắt buộc — cần thảo luận và xác nhận phạm vi cụ thể trước khi triển khai):
+
 - Pipeline 2 giai đoạn: detection bảo thủ (rule/tagger) → correction có kiểm soát (seq2seq), tránh để model tự do viết lại cả câu.
 - Entity masking cho tên riêng/số liệu/mã số trước khi đưa vào model.
 - Data augmentation: sinh thêm câu đúng hoàn toàn + lỗi tổng hợp (synthetic noise) để bù cho việc VSEC 100% câu đều có lỗi.
@@ -34,7 +35,7 @@ Các hướng mở rộng (tùy thời gian, không bắt buộc — cần thả
 
 - **Nguồn**: Hugging Face — `nguyenthanhasia/vsec-vietnamese-spell-correction`
   https://huggingface.co/datasets/nguyenthanhasia/vsec-vietnamese-spell-correction
-- **Paper gốc**: Do, Dinh-Truong, Nguyen, Ha Thanh, Bui, Thang Ngoc, Vo, Hieu Dinh. *"VSEC: Transformer-based Model for Vietnamese Spelling Correction"*, PRICAI 2021, pp. 259–272.
+- **Paper gốc**: Do, Dinh-Truong, Nguyen, Ha Thanh, Bui, Thang Ngoc, Vo, Hieu Dinh. _"VSEC: Transformer-based Model for Vietnamese Spelling Correction"_, PRICAI 2021, pp. 259–272.
   ```bibtex
   @inproceedings{do2021vsec,
     title={Vsec: Transformer-based model for vietnamese spelling correction},
@@ -53,22 +54,22 @@ Các hướng mở rộng (tùy thời gian, không bắt buộc — cần thả
 
 ### 3.1. Cấu trúc trường dữ liệu (Data Fields)
 
-| Trường | Kiểu | Mô tả |
-|---|---|---|
-| `text` | string | Câu gốc, có thể chứa lỗi chính tả |
-| `corrected_text` | string | Câu đã được sửa đúng |
-| `syllable_annotations` | list | Annotation chi tiết theo từng âm tiết |
-| `syllable_annotations[].syllable` | string | Nội dung âm tiết |
-| `syllable_annotations[].is_correct` | boolean | Âm tiết viết đúng hay sai |
-| `syllable_annotations[].corrections` | list | Danh sách gợi ý sửa (nếu sai) |
-| `syllable_annotations[].position` | int | **Vị trí âm tiết trong câu** (0-indexed, syllable index — không phải character index) |
-| `error_count` | int | Tổng số lỗi trong câu |
-| `error_positions` | list | Danh sách vị trí (syllable index) xuất hiện lỗi |
-| `correction_pairs` | list | Danh sách cặp (lỗi, sửa) kèm vị trí |
-| `correction_pairs[].error` | string | Âm tiết/cụm sai |
-| `correction_pairs[].correction` | string | Âm tiết/cụm đúng |
-| `correction_pairs[].position` | int | Vị trí lỗi (syllable index) |
-| `has_errors` | boolean | Câu có lỗi hay không (luôn `true` trong dataset này) |
+| Trường                               | Kiểu    | Mô tả                                                                                 |
+| ------------------------------------ | ------- | ------------------------------------------------------------------------------------- |
+| `text`                               | string  | Câu gốc, có thể chứa lỗi chính tả                                                     |
+| `corrected_text`                     | string  | Câu đã được sửa đúng                                                                  |
+| `syllable_annotations`               | list    | Annotation chi tiết theo từng âm tiết                                                 |
+| `syllable_annotations[].syllable`    | string  | Nội dung âm tiết                                                                      |
+| `syllable_annotations[].is_correct`  | boolean | Âm tiết viết đúng hay sai                                                             |
+| `syllable_annotations[].corrections` | list    | Danh sách gợi ý sửa (nếu sai)                                                         |
+| `syllable_annotations[].position`    | int     | **Vị trí âm tiết trong câu** (0-indexed, syllable index — không phải character index) |
+| `error_count`                        | int     | Tổng số lỗi trong câu                                                                 |
+| `error_positions`                    | list    | Danh sách vị trí (syllable index) xuất hiện lỗi                                       |
+| `correction_pairs`                   | list    | Danh sách cặp (lỗi, sửa) kèm vị trí                                                   |
+| `correction_pairs[].error`           | string  | Âm tiết/cụm sai                                                                       |
+| `correction_pairs[].correction`      | string  | Âm tiết/cụm đúng                                                                      |
+| `correction_pairs[].position`        | int     | Vị trí lỗi (syllable index)                                                           |
+| `has_errors`                         | boolean | Câu có lỗi hay không (luôn `true` trong dataset này)                                  |
 
 ### 3.2. Ví dụ dữ liệu
 
@@ -117,7 +118,7 @@ Không chỉ báo cáo accuracy tổng thể. Cần tách riêng:
 
 ## 7. Tài liệu tham khảo liên quan (2026)
 
-- Huynh, H.T.N., Nguyen, L.S.T., Nguyen, N.H., Nguyen, H.M., Quan, T.T. *"A Two-Stage Vietnamese Spelling Correction Pipeline Combining Underthesea and BARTpho"*, VNU Journal of Science: Comp. Science & Com. Eng., Vol. 42, No. 1 (2026), pp. 79–91.
+- Huynh, H.T.N., Nguyen, L.S.T., Nguyen, N.H., Nguyen, H.M., Quan, T.T. _"A Two-Stage Vietnamese Spelling Correction Pipeline Combining Underthesea and BARTpho"_, VNU Journal of Science: Comp. Science & Com. Eng., Vol. 42, No. 1 (2026), pp. 79–91.
   https://jcsce.vnu.edu.vn/index.php/jcsce/article/view/7020/222
   → Nêu vấn đề over-correction của seq2seq đơn thuần dưới domain shift; đề xuất pipeline: text normalization + conservative detection (Underthesea) + entity masking → context-aware correction (BARTpho) → detector-guided post-processing + iterative masked refinement.
 
@@ -125,9 +126,14 @@ Không chỉ báo cáo accuracy tổng thể. Cần tách riêng:
 
 - [x] Xác định dataset (VSEC) và hiểu rõ schema.
 - [x] Xác định mục tiêu học thuật cho môn NLP.
-- [ ] Chưa viết code nào. Chưa quyết định hướng mô hình hóa cụ thể (mục 4) — **cần hỏi và chờ xác nhận từ người dùng trước khi bắt đầu code**.
-- [ ] Chưa xác định chiến lược chia tập train/val/test cụ thể (tỷ lệ, seed).
-- [ ] Chưa xác định có làm phần so sánh với LLM prompting hay không.
+- [x] Phase 0 hoàn thành: `nb0_data_prep` (chuẩn hóa, chia tập 90/10 stratified seed 42) & `nb1_align_annotate` (align Levenshtein cho bộ test 6k).
+- [x] Phase 1 Pilot hoàn thành: `nb2_pilot_dict_noise` (đo non-word rate = 22.7% < 40% $\to$ chính thức bỏ hướng C; bootstrap noise model từ train).
+- [x] Đã chốt hướng mô hình hóa: Seq2Seq neural dùng `vinai/bartpho-syllable` + LoRA fp16; so sánh đối chứng 2 run (Run 1: thuần, Run 2: kèm augmentation).
+- [x] Đã chốt: Bỏ phần so sánh LLM prompting (22/09/2026).
+- [x] Triển khai `nb3-baseline-train-eval.ipynb` trên Kaggle 2× T4 (22–23/09/2026): Run 1 thuần + Run 2 augmentation — Detection F1 test 76,43% → 80,45%, over-correction 1,82–1,88% (< ngưỡng 2–3%).
+- [x] Triển khai `nb3b-zeroshot-baseline.ipynb` (eval-only, 22–23/09/2026): Identity + Zero-shot — fine-tune đóng góp lớn (F1 val 9,41% → 76,16%); over-correction có sẵn ở base model (zero-shot 1,56%).
+- [ ] Phase 2: hiệu chỉnh noise model (lệch 28,2 điểm) → Run 3; post-processing chống FP deletion; (tùy quota) full-FT ablation.
 
 ---
-*Agent đọc file này cần tuân thủ mục 0 (Quy tắc làm việc bắt buộc) trong suốt quá trình làm việc trên dự án.*
+
+_Agent đọc file này cần tuân thủ mục 0 (Quy tắc làm việc bắt buộc) trong suốt quá trình làm việc trên dự án._
