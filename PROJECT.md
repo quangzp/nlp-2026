@@ -132,6 +132,7 @@ Không chỉ báo cáo accuracy tổng thể. Cần tách riêng:
 - [x] Đã chốt: Bỏ phần so sánh LLM prompting (22/09/2026).
 - [x] Triển khai `nb3-baseline-train-eval.ipynb` trên Kaggle 2× T4 (22–23/09/2026): Run 1 thuần + Run 2 augmentation — Detection F1 test 76,43% → 80,45%, over-correction 1,82–1,88% (< ngưỡng 2–3%).
 - [x] Triển khai `nb3b-zeroshot-baseline.ipynb` (eval-only, 22–23/09/2026): Identity + Zero-shot — fine-tune đóng góp lớn (F1 val 9,41% → 76,16%); over-correction có sẵn ở base model (zero-shot 1,56%).
+- [x] Đối sánh external với NomVN (`nb5`, eval-only, 24/09/2026): Run 1/Run 2 trên bench ngoài `eval-real` (WA ≈55,6%; identity floor 51,96%; nhóm dẫn đầu 77–80%) + `nomvn-base` trên test 6k (Detection F1 87,26% > 80,45% — so sánh định hướng; confound trùng corpus ghi nhận làm hạn chế) → mở gate rule Telex/VNI cho Run 3 (chi tiết REPORT.md mục 12).
 - [ ] Phase 2: hiệu chỉnh noise model (lệch 28,2 điểm) → Run 3; post-processing chống FP deletion; (tùy quota) full-FT ablation.
 
 ---

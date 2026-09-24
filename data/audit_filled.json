@@ -1,0 +1,1129 @@
+{
+  "created": "2026-09-24T11:12:43",
+  "notebook": "nb4c_adjudication_audit",
+  "seed": 42,
+  "n_audit": 25,
+  "llm_labels_available": true,
+  "source_file": "data/adjudication_samples.json",
+  "composition": {
+    "stratum_ge_0.5": 2,
+    "random": 23
+  },
+  "rubric": {
+    "A": "Hai vế song song, các edit là lỗi chính tả thật → pseudo-gold OK",
+    "B": "Phía source đúng / bản sửa sai → pseudo-gold NHIỄU (model bị phạt oan)",
+    "C": "Edit phi chính tả (số liệu, viết tắt, tên riêng, format) — không tính là nhiễu",
+    "D": "Hai vế không song song / align hỏng → tính là nhiễu"
+  },
+  "instructions": [
+    "Soát MÙ: file này cố tình không chứa nhãn LLM/confidence — đừng tìm xem LLM ghi gì.",
+    "Điền label in {A,B,C,D} theo rubric (A/C = pseudo-gold OK, B/D = NHIỄU) + label_note nếu cần.",
+    "Lưu thành data/audit_filled.json (giữ nguyên schema) hoặc điền thẳng trong file này.",
+    "Chạy lại cell \"Đối chiếu & consensus\" của nb4c."
+  ],
+  "samples": [
+    {
+      "sample_id": "adj_01417",
+      "stratum": ">=0.5",
+      "test_index": 1417,
+      "text": "Hy Lạp ám ản hội ngị G20.",
+      "corrected_text": "Hy Lạp ám ảnh hội nghị G20.",
+      "src_marked": "Hy Lạp ám [ản] hội [ngị] G20 .",
+      "tgt_marked": "Hy Lạp ám [ảnh] hội [nghị] G20 .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 3,
+          "src": "ản",
+          "tgt": "ảnh",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "ngị",
+          "tgt": "nghị",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.5,
+      "n_src_tokens": 8,
+      "label": "A",
+      "label_note": "A"
+    },
+    {
+      "sample_id": "adj_04394",
+      "stratum": ">=0.5",
+      "test_index": 4394,
+      "text": "Lady Gaga bôi dầu leen khắp ngưowfi.",
+      "corrected_text": "Lady Gaga bôi dầu lên khắp người.",
+      "src_marked": "Lady Gaga bôi dầu [leen] khắp [ngưowfi] .",
+      "tgt_marked": "Lady Gaga bôi dầu [lên] khắp [người] .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 4,
+          "src": "leen",
+          "tgt": "lên",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 6,
+          "src": "ngưowfi",
+          "tgt": "người",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.5,
+      "n_src_tokens": 8,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_04717",
+      "stratum": "0.3-0.4",
+      "test_index": 4717,
+      "text": "Thậm chí chính các má cũng đã từng trảk qua nỗi cực nhục ấy, vậy mà tronG những mối quan ệ thuần tiền Bạc đ không có chỗ nào cho sự sẻ chia, cảm thông, thương xór.",
+      "corrected_text": "Thậm chí chính các má cũng đã từng trải qua nỗi cực nhục ấy, vậy mà trong những mối quan hệ thuần tiền bạc đó, không có chỗ nào cho sự sẻ chia, cảm thông, thương xót.",
+      "src_marked": "Thậm chí chính các má cũng đã từng [trảk] qua nỗi cực nhục ấy , vậy mà [tronG] những mối quan [ệ] thuần tiền [Bạc] [đ] không có chỗ nào cho sự sẻ chia , cảm thông , thương [xór] .",
+      "tgt_marked": "Thậm chí chính các má cũng đã từng [trải] qua nỗi cực nhục ấy , vậy mà [trong] những mối quan [hệ] thuần tiền [bạc] [đó] [,] không có chỗ nào cho sự sẻ chia , cảm thông , thương [xót] .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 8,
+          "src": "trảk",
+          "tgt": "trải",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 17,
+          "src": "tronG",
+          "tgt": "trong",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 21,
+          "src": "ệ",
+          "tgt": "hệ",
+          "punct_only": false
+        },
+        {
+          "type": "multi",
+          "position": 24,
+          "src": "Bạc đ",
+          "tgt": "bạc đó ,",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 39,
+          "src": "xór",
+          "tgt": "xót",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3095,
+      "n_src_tokens": 41,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_00589",
+      "stratum": "0.3-0.4",
+      "test_index": 589,
+      "text": "Nếu có doank nghiệp khác bán lẻ một loại sản fẩm tkì hẳn không cạnh tranh bằng.",
+      "corrected_text": "Nếu có doanh nghiệp khác bán lẻ một loại sản phẩm thì hẳn không cạnh tranh bằng.",
+      "src_marked": "Nếu có [doank] nghiệp khác bán lẻ một loại sản [fẩm] [tkì] hẳn không cạnh tranh bằng .",
+      "tgt_marked": "Nếu có [doanh] nghiệp khác bán lẻ một loại sản [phẩm] [thì] hẳn không cạnh tranh bằng .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 2,
+          "src": "doank",
+          "tgt": "doanh",
+          "punct_only": false
+        },
+        {
+          "type": "multi",
+          "position": 10,
+          "src": "fẩm tkì",
+          "tgt": "phẩm thì",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3333,
+      "n_src_tokens": 18,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_00175",
+      "stratum": "0.3-0.4",
+      "test_index": 175,
+      "text": "Tuần trước, Ngân hàng Nhaf nước đã hút ròng gần 15.000 tyr ddoofng trên OMO.",
+      "corrected_text": "Tuần trước, Ngân hàng Nhà nước đã hút ròng gần 15.000 tỷ đồng trên OMO.",
+      "src_marked": "Tuần trước , Ngân hàng [Nhaf] nước đã hút ròng gần 15 . 000 [tyr] [ddoofng] trên OMO .",
+      "tgt_marked": "Tuần trước , Ngân hàng [Nhà] nước đã hút ròng gần 15 . 000 [tỷ] [đồng] trên OMO .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "Nhaf",
+          "tgt": "Nhà",
+          "punct_only": false
+        },
+        {
+          "type": "multi",
+          "position": 14,
+          "src": "tyr ddoofng",
+          "tgt": "tỷ đồng",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3158,
+      "n_src_tokens": 19,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_05696",
+      "stratum": "0.4-0.5",
+      "test_index": 5696,
+      "text": "Đó là buổi diễn vowr kịch Romeo vaf Juliet.",
+      "corrected_text": "Đó là buổi diễn vở kịch Romeo và Juliet.",
+      "src_marked": "Đó là buổi diễn [vowr] kịch Romeo [vaf] Juliet .",
+      "tgt_marked": "Đó là buổi diễn [vở] kịch Romeo [và] Juliet .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 4,
+          "src": "vowr",
+          "tgt": "vở",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 7,
+          "src": "vaf",
+          "tgt": "và",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.4,
+      "n_src_tokens": 10,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_01772",
+      "stratum": "0.3-0.4",
+      "test_index": 1772,
+      "text": "Trỉ cần gặp đối thủ tinh quái hơn, e rằn những sai sót tương tự của U23 VN phải chả dá đắt.",
+      "corrected_text": "Chỉ cần gặp đối thủ tinh quái hơn, e rằng những sai sót tương tự của U23 VN phải trả giá đắt.",
+      "src_marked": "[Trỉ] cần gặp đối thủ tinh quái hơn , e [rằn] những sai sót tương tự của U23 VN phải [chả] [dá] đắt .",
+      "tgt_marked": "[Chỉ] cần gặp đối thủ tinh quái hơn , e [rằng] những sai sót tương tự của U23 VN phải [trả] [giá] đắt .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 0,
+          "src": "Trỉ",
+          "tgt": "Chỉ",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 10,
+          "src": "rằn",
+          "tgt": "rằng",
+          "punct_only": false
+        },
+        {
+          "type": "multi",
+          "position": 20,
+          "src": "chả dá",
+          "tgt": "trả giá",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3333,
+      "n_src_tokens": 24,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_01583",
+      "stratum": "0.3-0.4",
+      "test_index": 1583,
+      "text": "Khi tóc khô, tháo các bím tóc ra zẽ ftạo thành những nếp xoăn bồng bềng.",
+      "corrected_text": "Khi tóc khô, tháo các bím tóc ra sẽ tạo thành những nếp xoăn bồng bềnh.",
+      "src_marked": "Khi tóc khô , tháo các bím tóc ra [zẽ] [ftạo] thành những nếp xoăn bồng [bềng] .",
+      "tgt_marked": "Khi tóc khô , tháo các bím tóc ra [sẽ] [tạo] thành những nếp xoăn bồng [bềnh] .",
+      "edit_blocks": [
+        {
+          "type": "multi",
+          "position": 9,
+          "src": "zẽ ftạo",
+          "tgt": "sẽ tạo",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 16,
+          "src": "bềng",
+          "tgt": "bềnh",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3333,
+      "n_src_tokens": 18,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_01347",
+      "stratum": "0.3-0.4",
+      "test_index": 1347,
+      "text": "Trưởng tkôn Khau Ban, ông Nông Văn Đô cko biết: \"Bà con rất vui mừng khi dự án có hạng mục đầu tư xây cko mỗi gia đìnk một bể ckứa nước sink hoạt.",
+      "corrected_text": "Trưởng thôn Khau Ban, ông Nông Văn Đô cho biết: \"Bà con rất vui mừng khi dự án có hạng mục đầu tư xây cho mỗi gia đình một bể chứa nước sinh hoạt.",
+      "src_marked": "Trưởng [tkôn] Khau Ban , ông Nông Văn Đô [cko] biết : \" Bà con rất vui mừng khi dự án có hạng mục đầu tư xây [cko] mỗi gia [đìnk] một bể [ckứa] nước [sink] hoạt .",
+      "tgt_marked": "Trưởng [thôn] Khau Ban , ông Nông Văn Đô [cho] biết : \" Bà con rất vui mừng khi dự án có hạng mục đầu tư xây [cho] mỗi gia [đình] một bể [chứa] nước [sinh] hoạt .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 1,
+          "src": "tkôn",
+          "tgt": "thôn",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 9,
+          "src": "cko",
+          "tgt": "cho",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 27,
+          "src": "cko",
+          "tgt": "cho",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 30,
+          "src": "đìnk",
+          "tgt": "đình",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 33,
+          "src": "ckứa",
+          "tgt": "chứa",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 35,
+          "src": "sink",
+          "tgt": "sinh",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3158,
+      "n_src_tokens": 38,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_00735",
+      "stratum": "0.3-0.4",
+      "test_index": 735,
+      "text": "Tuk nhiên, vln còn nhiều e dè với phong cách này vì bản twân màu đỏ đã khó kết hợp, mà lại bằng chất liệu ka tkì càng kén người.",
+      "corrected_text": "Tuy nhiên, vẫn còn nhiều e dè với phong cách này vì bản thân màu đỏ đã khó kết hợp, mà lại bằng chất liệu da thì càng kén người.",
+      "src_marked": "[Tuk] nhiên , [vln] còn nhiều e dè với phong cách này vì bản [twân] màu đỏ đã khó kết hợp , mà lại bằng chất liệu [ka] [tkì] càng kén người .",
+      "tgt_marked": "[Tuy] nhiên , [vẫn] còn nhiều e dè với phong cách này vì bản [thân] màu đỏ đã khó kết hợp , mà lại bằng chất liệu [da] [thì] càng kén người .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 0,
+          "src": "Tuk",
+          "tgt": "Tuy",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 3,
+          "src": "vln",
+          "tgt": "vẫn",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 14,
+          "src": "twân",
+          "tgt": "thân",
+          "punct_only": false
+        },
+        {
+          "type": "multi",
+          "position": 27,
+          "src": "ka tkì",
+          "tgt": "da thì",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.303,
+      "n_src_tokens": 33,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_00549",
+      "stratum": "0.3-0.4",
+      "test_index": 549,
+      "text": "Tuy nhiên thực chất vấn đề này như dhế nào thj vẫn yà câu hỏi lớn đối với thị trường bất động sảg trong thời đihm từ nay đến cuối năm!",
+      "corrected_text": "Tuy nhiên thực chất vấn đề này như thế nào thì vẫn là câu hỏi lớn đối với thị trường bất động sản trong thời điểm từ nay đến cuối năm!",
+      "src_marked": "Tuy nhiên thực chất vấn đề này như [dhế] nào [thj] vẫn [yà] câu hỏi lớn đối với thị trường bất động [sảg] trong thời [đihm] từ nay đến cuối năm !",
+      "tgt_marked": "Tuy nhiên thực chất vấn đề này như [thế] nào [thì] vẫn [là] câu hỏi lớn đối với thị trường bất động [sản] trong thời [điểm] từ nay đến cuối năm !",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 8,
+          "src": "dhế",
+          "tgt": "thế",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 10,
+          "src": "thj",
+          "tgt": "thì",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 12,
+          "src": "yà",
+          "tgt": "là",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 22,
+          "src": "sảg",
+          "tgt": "sản",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 25,
+          "src": "đihm",
+          "tgt": "điểm",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3125,
+      "n_src_tokens": 32,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_05129",
+      "stratum": "0.3-0.4",
+      "test_index": 5129,
+      "text": "Tuy nhiên, không phải là do uống nhieefu nước khieesn bạn như thees đâu.",
+      "corrected_text": "Tuy nhiên, không phải là do uống nhiều nước khiến bạn như thế đâu.",
+      "src_marked": "Tuy nhiên , không phải là do uống [nhieefu] nước [khieesn] bạn như [thees] đâu .",
+      "tgt_marked": "Tuy nhiên , không phải là do uống [nhiều] nước [khiến] bạn như [thế] đâu .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 8,
+          "src": "nhieefu",
+          "tgt": "nhiều",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 10,
+          "src": "khieesn",
+          "tgt": "khiến",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 13,
+          "src": "thees",
+          "tgt": "thế",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.375,
+      "n_src_tokens": 16,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_04095",
+      "stratum": "0.3-0.4",
+      "test_index": 4095,
+      "text": "Cha mẹ đổ thêm dầu vài lửa Bên cạnh nnhững bậc phụ huynh bức xúc với việc dạ6 thêm học thêm fhì cũng có những phụ huynh nêj quan điểm, cần phải cho con đi học tghêm bởi nnhiều nguyên do.",
+      "corrected_text": "Cha mẹ đổ thêm dầu vào lửa Bên cạnh những bậc phụ huynh bức xúc với việc dạy thêm học thêm thì cũng có những phụ huynh nêu quan điểm, cần phải cho con đi học thêm bởi nhiều nguyên do.",
+      "src_marked": "Cha mẹ đổ thêm dầu [vài] lửa Bên cạnh [nnhững] bậc phụ huynh bức xúc với việc [dạ6] thêm học thêm [fhì] cũng có những phụ huynh [nêj] quan điểm , cần phải cho con đi học [tghêm] bởi [nnhiều] nguyên do .",
+      "tgt_marked": "Cha mẹ đổ thêm dầu [vào] lửa Bên cạnh [những] bậc phụ huynh bức xúc với việc [dạy] thêm học thêm [thì] cũng có những phụ huynh [nêu] quan điểm , cần phải cho con đi học [thêm] bởi [nhiều] nguyên do .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "vài",
+          "tgt": "vào",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 9,
+          "src": "nnhững",
+          "tgt": "những",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 17,
+          "src": "dạ6",
+          "tgt": "dạy",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 21,
+          "src": "fhì",
+          "tgt": "thì",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 27,
+          "src": "nêj",
+          "tgt": "nêu",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 37,
+          "src": "tghêm",
+          "tgt": "thêm",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 39,
+          "src": "nnhiều",
+          "tgt": "nhiều",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3256,
+      "n_src_tokens": 43,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_00503",
+      "stratum": "0.3-0.4",
+      "test_index": 503,
+      "text": "Chức năng này cuxng cho phép sử dujng các biện phasp không sử dujng quy định can thiệp trực tiếp, trong đó Nhà nước tạo động lực và môi trường cho suwj thay đổi, không áp đặt hướng thay đoori thông qua quy định, vì quy ddijnh không phải lusc nào cũng cos tác dụng.",
+      "corrected_text": "Chức năng này cũng cho phép sử dụng các biện pháp không sử dụng quy định can thiệp trực tiếp, trong đó Nhà nước tạo động lực và môi trường cho sự thay đổi, không áp đặt hướng thay đổi thông qua quy định, vì quy định không phải lúc nào cũng có tác dụng.",
+      "src_marked": "Chức năng này [cuxng] cho phép sử [dujng] các biện [phasp] không sử [dujng] quy định can thiệp trực tiếp , trong đó Nhà nước tạo động lực và môi trường cho [suwj] thay đổi , không áp đặt hướng thay [đoori] thông qua quy định , vì quy [ddijnh] không phải [lusc] nào cũng [cos] tác dụng .",
+      "tgt_marked": "Chức năng này [cũng] cho phép sử [dụng] các biện [pháp] không sử [dụng] quy định can thiệp trực tiếp , trong đó Nhà nước tạo động lực và môi trường cho [sự] thay đổi , không áp đặt hướng thay [đổi] thông qua quy định , vì quy [định] không phải [lúc] nào cũng [có] tác dụng .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 3,
+          "src": "cuxng",
+          "tgt": "cũng",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 7,
+          "src": "dujng",
+          "tgt": "dụng",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 10,
+          "src": "phasp",
+          "tgt": "pháp",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 13,
+          "src": "dujng",
+          "tgt": "dụng",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 32,
+          "src": "suwj",
+          "tgt": "sự",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 41,
+          "src": "đoori",
+          "tgt": "đổi",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 49,
+          "src": "ddijnh",
+          "tgt": "định",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 52,
+          "src": "lusc",
+          "tgt": "lúc",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 55,
+          "src": "cos",
+          "tgt": "có",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3051,
+      "n_src_tokens": 59,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_04423",
+      "stratum": "0.3-0.4",
+      "test_index": 4423,
+      "text": "Đdy là mtt phần trong chsến dịch tấn công từ trên không và trên biển.",
+      "corrected_text": "Đây là một phần trong chiến dịch tấn công từ trên không và trên biển.",
+      "src_marked": "[Đdy] là [mtt] phần trong [chsến] dịch tấn công từ trên không và trên biển .",
+      "tgt_marked": "[Đây] là [một] phần trong [chiến] dịch tấn công từ trên không và trên biển .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 0,
+          "src": "Đdy",
+          "tgt": "Đây",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 2,
+          "src": "mtt",
+          "tgt": "một",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "chsến",
+          "tgt": "chiến",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.375,
+      "n_src_tokens": 16,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_03059",
+      "stratum": "0.3-0.4",
+      "test_index": 3059,
+      "text": "Các mức độ bệnh TCM ở trẻ: Vì mức độ nặng khác nhau nên bệnh mược phân thmnh 4 độ: Đy f: Loét miệng ià hoặc sang thương da.",
+      "corrected_text": "Các mức độ bệnh TCM ở trẻ: Vì mức độ nặng khác nhau nên bệnh được phân thành 4 độ: Độ 1: Loét miệng và hoặc sang thương da.",
+      "src_marked": "Các mức độ bệnh TCM ở trẻ : Vì mức độ nặng khác nhau nên bệnh [mược] phân [thmnh] 4 độ : [Đy] [f] : Loét miệng [ià] hoặc sang thương da .",
+      "tgt_marked": "Các mức độ bệnh TCM ở trẻ : Vì mức độ nặng khác nhau nên bệnh [được] phân [thành] 4 độ : [Độ] [1] : Loét miệng [và] hoặc sang thương da .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 16,
+          "src": "mược",
+          "tgt": "được",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 18,
+          "src": "thmnh",
+          "tgt": "thành",
+          "punct_only": false
+        },
+        {
+          "type": "multi",
+          "position": 22,
+          "src": "Đy f",
+          "tgt": "Độ 1",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 27,
+          "src": "ià",
+          "tgt": "và",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.303,
+      "n_src_tokens": 33,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_00183",
+      "stratum": "0.3-0.4",
+      "test_index": 183,
+      "text": "Mỹ và Anh được cho là đang hối hả lên ke hoạch hành động sau khi có tzn Iran hiện đã có yủ uranium jho 4 quả bom nguyên ts.",
+      "corrected_text": "Mỹ và Anh được cho là đang hối hả lên kế hoạch hành động sau khi có tin Iran hiện đã có đủ uranium cho 4 quả bom nguyên tử.",
+      "src_marked": "Mỹ và Anh được cho là đang hối hả lên [ke] hoạch hành động sau khi có [tzn] Iran hiện đã có [yủ] uranium [jho] 4 quả bom nguyên [ts] .",
+      "tgt_marked": "Mỹ và Anh được cho là đang hối hả lên [kế] hoạch hành động sau khi có [tin] Iran hiện đã có [đủ] uranium [cho] 4 quả bom nguyên [tử] .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 10,
+          "src": "ke",
+          "tgt": "kế",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 17,
+          "src": "tzn",
+          "tgt": "tin",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 22,
+          "src": "yủ",
+          "tgt": "đủ",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 24,
+          "src": "jho",
+          "tgt": "cho",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 29,
+          "src": "ts",
+          "tgt": "tử",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3226,
+      "n_src_tokens": 31,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_05772",
+      "stratum": "0.3-0.4",
+      "test_index": 5772,
+      "text": "Bồ Đào Nha cũng đòi nkững điều khoản link hoạt hơn cko gói cứu trợ của nước này.",
+      "corrected_text": "Bồ Đào Nha cũng đòi những điều khoản linh hoạt hơn cho gói cứu trợ của nước này.",
+      "src_marked": "Bồ Đào Nha cũng đòi [nkững] điều khoản [link] hoạt hơn [cko] gói cứu trợ của nước này .",
+      "tgt_marked": "Bồ Đào Nha cũng đòi [những] điều khoản [linh] hoạt hơn [cho] gói cứu trợ của nước này .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "nkững",
+          "tgt": "những",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 8,
+          "src": "link",
+          "tgt": "linh",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 11,
+          "src": "cko",
+          "tgt": "cho",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3158,
+      "n_src_tokens": 19,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_05207",
+      "stratum": "0.3-0.4",
+      "test_index": 5207,
+      "text": "Trị nói: Bây dờ mình cần tình nghĩa, trứ mọi thứ đều là phù du.",
+      "corrected_text": "Chị nói: Bây giờ mình cần tình nghĩa, chứ mọi thứ đều là phù du.",
+      "src_marked": "[Trị] nói : Bây [dờ] mình cần tình nghĩa , [trứ] mọi thứ đều là phù du .",
+      "tgt_marked": "[Chị] nói : Bây [giờ] mình cần tình nghĩa , [chứ] mọi thứ đều là phù du .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 0,
+          "src": "Trị",
+          "tgt": "Chị",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 4,
+          "src": "dờ",
+          "tgt": "giờ",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 10,
+          "src": "trứ",
+          "tgt": "chứ",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3333,
+      "n_src_tokens": 18,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_01326",
+      "stratum": "0.3-0.4",
+      "test_index": 1326,
+      "text": "Nhận tài trợ, cả Quan Liêm lẫn Chường Sơn đều tro biết sẽ giùng tất cả số tiền này phục vụ công tác truyên môn là tập luyện, thi đấu; trong đó cỳ thủ số 1 Lê Quan Liêm đã lên phương á thuê HLV ngoại riêng nhằm nân cao sức cờ của mình.",
+      "corrected_text": "Nhận tài trợ, cả Quang Liêm lẫn Trường Sơn đều cho biết sẽ dùng tất cả số tiền này phục vụ công tác chuyên môn là tập luyện, thi đấu; trong đó kỳ thủ số 1 Lê Quang Liêm đã lên phương án thuê HLV ngoại riêng nhằm nâng cao sức cờ của mình.",
+      "src_marked": "Nhận tài trợ , cả [Quan] Liêm lẫn [Chường] Sơn đều [tro] biết sẽ [giùng] tất cả số tiền này phục vụ công tác [truyên] môn là tập luyện , thi đấu ; trong đó [cỳ] thủ số 1 Lê [Quan] Liêm đã lên phương [á] thuê HLV ngoại riêng nhằm [nân] cao sức cờ của mình .",
+      "tgt_marked": "Nhận tài trợ , cả [Quang] Liêm lẫn [Trường] Sơn đều [cho] biết sẽ [dùng] tất cả số tiền này phục vụ công tác [chuyên] môn là tập luyện , thi đấu ; trong đó [kỳ] thủ số 1 Lê [Quang] Liêm đã lên phương [án] thuê HLV ngoại riêng nhằm [nâng] cao sức cờ của mình .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "Quan",
+          "tgt": "Quang",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 8,
+          "src": "Chường",
+          "tgt": "Trường",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 11,
+          "src": "tro",
+          "tgt": "cho",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 14,
+          "src": "giùng",
+          "tgt": "dùng",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 24,
+          "src": "truyên",
+          "tgt": "chuyên",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 35,
+          "src": "cỳ",
+          "tgt": "kỳ",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 40,
+          "src": "Quan",
+          "tgt": "Quang",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 45,
+          "src": "á",
+          "tgt": "án",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 51,
+          "src": "nân",
+          "tgt": "nâng",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3103,
+      "n_src_tokens": 58,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_01388",
+      "stratum": "0.3-0.4",
+      "test_index": 1388,
+      "text": "Hãy ngắm nhìn nkững tòa nhà ckọc trời, trước khi tự khám phá nkững cảm giác của mình tại một khu ckợ đẫm nước hay tiên đoán tương lai của mìnk tại một ngôi ckùa.",
+      "corrected_text": "Hãy ngắm nhìn những tòa nhà chọc trời, trước khi tự khám phá những cảm giác của mình tại một khu chợ đẫm nước hay tiên đoán tương lai của mình tại một ngôi chùa.",
+      "src_marked": "Hãy ngắm nhìn [nkững] tòa nhà [ckọc] trời , trước khi tự khám phá [nkững] cảm giác của mình tại một khu [ckợ] đẫm nước hay tiên đoán tương lai của [mìnk] tại một ngôi [ckùa] .",
+      "tgt_marked": "Hãy ngắm nhìn [những] tòa nhà [chọc] trời , trước khi tự khám phá [những] cảm giác của mình tại một khu [chợ] đẫm nước hay tiên đoán tương lai của [mình] tại một ngôi [chùa] .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 3,
+          "src": "nkững",
+          "tgt": "những",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 6,
+          "src": "ckọc",
+          "tgt": "chọc",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 14,
+          "src": "nkững",
+          "tgt": "những",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 22,
+          "src": "ckợ",
+          "tgt": "chợ",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 31,
+          "src": "mìnk",
+          "tgt": "mình",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 35,
+          "src": "ckùa",
+          "tgt": "chùa",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3243,
+      "n_src_tokens": 37,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_03729",
+      "stratum": "0.3-0.4",
+      "test_index": 3729,
+      "text": "Ngày tvước, cậu bé chm nằm trêy ghế và không hề muốn nói chuyện.",
+      "corrected_text": "Ngày trước, cậu bé chỉ nằm trên ghế và không hề muốn nói chuyện.",
+      "src_marked": "Ngày [tvước] , cậu bé [chm] nằm [trêy] ghế và không hề muốn nói chuyện .",
+      "tgt_marked": "Ngày [trước] , cậu bé [chỉ] nằm [trên] ghế và không hề muốn nói chuyện .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 1,
+          "src": "tvước",
+          "tgt": "trước",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "chm",
+          "tgt": "chỉ",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 7,
+          "src": "trêy",
+          "tgt": "trên",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.375,
+      "n_src_tokens": 16,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_04487",
+      "stratum": "0.3-0.4",
+      "test_index": 4487,
+      "text": "Hầu hết các đối tác triến lược quan chọng và các đối tác kinh tế - thương mại hàn đầu của nước ta là các nền cinh tế thàn viên của APEC.",
+      "corrected_text": "Hầu hết các đối tác chiến lược quan trọng và các đối tác kinh tế - thương mại hàng đầu của nước ta là các nền kinh tế thành viên của APEC.",
+      "src_marked": "Hầu hết các đối tác [triến] lược quan [chọng] và các đối tác kinh tế - thương mại [hàn] đầu của nước ta là các nền [cinh] tế [thàn] viên của APEC .",
+      "tgt_marked": "Hầu hết các đối tác [chiến] lược quan [trọng] và các đối tác kinh tế - thương mại [hàng] đầu của nước ta là các nền [kinh] tế [thành] viên của APEC .",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "triến",
+          "tgt": "chiến",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 8,
+          "src": "chọng",
+          "tgt": "trọng",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 18,
+          "src": "hàn",
+          "tgt": "hàng",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 26,
+          "src": "cinh",
+          "tgt": "kinh",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 28,
+          "src": "thàn",
+          "tgt": "thành",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.303,
+      "n_src_tokens": 33,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_04886",
+      "stratum": "0.3-0.4",
+      "test_index": 4886,
+      "text": "Điều này sẽ góp phần không nhỏ dúp trúng ta tái cơ cấu nền cinh tế, đổi mới mô hình tăn trưởng và thực hiện thàn công Triến lược phát chiển kinh tế - xã hội giai đoạn 2011 - 2020.",
+      "corrected_text": "Điều này sẽ góp phần không nhỏ giúp chúng ta tái cơ cấu nền kinh tế, đổi mới mô hình tăng trưởng và thực hiện thành công Chiến lược phát triển kinh tế - xã hội giai đoạn 2011 - 2020.",
+      "src_marked": "Điều này sẽ góp phần không nhỏ [dúp] [trúng] ta tái cơ cấu nền [cinh] tế , đổi mới mô hình [tăn] trưởng và thực hiện [thàn] công [Triến] lược phát [chiển] kinh tế - xã hội giai đoạn 2011 - 2020 .",
+      "tgt_marked": "Điều này sẽ góp phần không nhỏ [giúp] [chúng] ta tái cơ cấu nền [kinh] tế , đổi mới mô hình [tăng] trưởng và thực hiện [thành] công [Chiến] lược phát [triển] kinh tế - xã hội giai đoạn 2011 - 2020 .",
+      "edit_blocks": [
+        {
+          "type": "multi",
+          "position": 7,
+          "src": "dúp trúng",
+          "tgt": "giúp chúng",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 14,
+          "src": "cinh",
+          "tgt": "kinh",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 21,
+          "src": "tăn",
+          "tgt": "tăng",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 26,
+          "src": "thàn",
+          "tgt": "thành",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 28,
+          "src": "Triến",
+          "tgt": "Chiến",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 31,
+          "src": "chiển",
+          "tgt": "triển",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.3256,
+      "n_src_tokens": 43,
+      "label": "A",
+      "label_note": ""
+    },
+    {
+      "sample_id": "adj_04223",
+      "stratum": "0.4-0.5",
+      "test_index": 4223,
+      "text": "Em muốn hỏi chị là lieeju anh có tình cảm gif với em khoong?.",
+      "corrected_text": "Em muốn hỏi chị là liệu anh có tình cảm gì với em không?.",
+      "src_marked": "Em muốn hỏi chị là [lieeju] anh có tình cảm [gif] với em [khoong] ?.",
+      "tgt_marked": "Em muốn hỏi chị là [liệu] anh có tình cảm [gì] với em [không] ?.",
+      "edit_blocks": [
+        {
+          "type": "substitute",
+          "position": 5,
+          "src": "lieeju",
+          "tgt": "liệu",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 10,
+          "src": "gif",
+          "tgt": "gì",
+          "punct_only": false
+        },
+        {
+          "type": "substitute",
+          "position": 13,
+          "src": "khoong",
+          "tgt": "không",
+          "punct_only": false
+        }
+      ],
+      "edit_ratio": 0.4,
+      "n_src_tokens": 15,
+      "label": "A",
+      "label_note": ""
+    }
+  ]
+}

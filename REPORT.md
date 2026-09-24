@@ -1,7 +1,7 @@
 # REPORT — Báo cáo tiến độ dự án: Sửa lỗi chính tả tiếng Việt (VSEC)
 
-> **Mốc báo cáo**: 23/09/2026 · Ghi nhận toàn bộ công việc từ đầu dự án đến thời điểm hiện tại.
-> Các lần chạy thí nghiệm trên Kaggle (GPU T4): ngày **22/09/2026** (nb0, nb1, nb2) và **22–23/09/2026** (nb3, nb3b).
+> **Mốc báo cáo**: 24/09/2026 · Ghi nhận toàn bộ công việc từ đầu dự án đến thời điểm hiện tại.
+> Các lần chạy thí nghiệm trên Kaggle: ngày **22/09/2026** (nb0, nb1, nb2 — GPU T4), **22–23/09/2026** (nb3, nb3b — GPU T4) và **24/09/2026** (nb4, nb4b — CPU, eval-only; nb5 — GPU T4, eval-only; nb4c — chạy local).
 > Số liệu trong báo cáo được trích **trực tiếp từ output đã chạy** nhúng trong các notebook tại `notebooks/` — không phải con số mục tiêu.
 > Tham chiếu: `PROJECT.md` (bối cảnh, ràng buộc), `DESIGN.md` (thiết kế, lộ trình, ngưỡng quyết định).
 
@@ -18,8 +18,12 @@
 | `notebooks/nb2-pilot-dict-noise.ipynb` | Pilot 1 (từ điển) + Pilot 2 (nhiễu tổng hợp) | 1 | ✅ Hoàn thành | 22/09/2026 (report 15:11:16) |
 | `notebooks/nb3-baseline-train-eval.ipynb` | Baseline LoRA BARTpho (Run 1 thuần / Run 2 + augmentation) | 1 | ✅ Hoàn thành | 22–23/09/2026 |
 | `notebooks/nb3b-zeroshot-baseline.ipynb` | Baseline đối chứng Identity & Zero-shot (eval-only) | 1 | ✅ Hoàn thành | 22–23/09/2026 |
+| `notebooks/nb4-error-analysis.ipynb` | Error analysis stratified trên TEST + adjudication pseudo-gold (eval-only, CPU) | 2 | ✅ Hoàn thành | 24/09/2026 |
+| `notebooks/nb4b-adjudication-llm-fill.ipynb` | Điền nhãn adjudication bằng LLM TypeSafe Choice (CPU) | 2 | ✅ Hoàn thành | 24/09/2026 |
+| `notebooks/nb4c-adjudication-audit.ipynb` | Audit người 25 mẫu adjudication blind + consensus (chạy cục bộ) | 2 | ✅ Hoàn thành | 24/09/2026 (local) |
+| `notebooks/nb5-external-eval.ipynb` | Đối sánh external NomVN: A — Run 1/Run 2 trên eval-real 150 câu; B — nomvn-base trên test 6k (eval-only) | 2 | ✅ Hoàn thành | 24/09/2026 |
 
-→ **Phase 0 + Phase 1 đã hoàn thành đầy đủ.** Dự án đang ở **điểm quyết định Phase 2** (chọn trục dữ liệu / trục kiến trúc theo bảng quyết định `DESIGN.md` §5).
+→ **Phase 0 + Phase 1 hoàn thành đầy đủ; Bước 1 Phase 2 (error analysis + adjudication) đã chạy xong.** Dự án đang ở **Bước 2 Phase 2**: post-processing chống deletion (tune trên val, áp frozen lên test) + Run 3 (noise hiệu chỉnh non-word 23–25%), theo nhật ký quyết định `DESIGN.md` §12 ngày 24/09. Song song, `nb5` (eval-only) đã đối sánh external với NomVN — kết quả và hệ quả quyết định xem mục 12.
 
 ### 1.2. Kết quả quan trọng nhất (chi tiết ở các mục sau)
 
@@ -29,6 +33,9 @@
 4. **Non-word rate 22,7% < ngưỡng 40%** → theo quy tắc quyết định, **bỏ sớm hướng kiến trúc hybrid từ điển (C)**, giữ seq2seq làm trục chính.
 5. Bộ test tự thu thập có **10,9% câu sạch** (653/5.983) → đo được Clean Retention; nhưng **dày lỗi hơn hẳn VSEC** (46,7% câu có ≥4 edit block so với 0,8% của VSEC) → domain shift đáng kể.
 6. Quy trình Phase 0 **sạch về data leakage**: cả 3 invariant đều PASS; dedupe chéo VSEC↔test chỉ 0 trùng (thấp hơn dự kiến).
+7. **Error analysis (nb4) định hướng thẳng Bước 2**: FP **deletion 45,4%** tổng FP Run 2 với pattern lặp (dấu câu `,`, họ âm tiết `tòa/họa/khỏe/thỏa…`); 77,2% vị trí detect-đúng-nhưng-sai là thay nhầm **từ thật**; 92% FN là **under-edit** (model sửa chỗ khác rồi bỏ sót) — không phải nhầm vị trí kề.
+8. **Pseudo-gold của test sạch ở mức nhiễu thấp**: adjudication 100 mẫu suspect (LLM-assisted) cho nhiễu 0,0% (CI95 [0; 3,7%], n=100 — dưới ngưỡng 8%); **đã kiểm chứng**: audit người 25 mẫu blind đạt đồng thuận 25/25 (`nb4c`, 24/09).
+9. **Đối sánh external (nb5)**: trên bench ngoài `eval-real` của NomVN, Run 1/Run 2 đạt word acc ≈55,6% — chỉ +3,6pp trên identity floor (51,96%) và cách xa nhóm dẫn đầu (nrl base 79,62%); điểm yếu rõ nhất là **lỗi Telex/VNI nhiều phím** (news_real 31%, telex_real 15%). Ngược chiều, `nomvn-base` trên test 6k của ta đạt **Detection F1 87,26% > 80,45%** (so sánh ở mức định hướng — quyết định 24/09 bỏ cross-dedupe, confound trùng corpus ghi nhận như hạn chế mục 10) → **mở gate rule Telex/VNI cho Run 3** (mục 12).
 
 ---
 
@@ -120,7 +127,7 @@ Bộ test tự thu thập **chỉ có `text` + `corrected_text`** (không có an
 
 - **Trả lời mục treo `DESIGN.md` §11.1**: bộ test **có 10,9% câu sạch** → metric Clean Retention (giữ nguyên câu sạch) khả thi trên test.
 - **Domain shift về độ dày lỗi**: test dày lỗi hơn hẳn VSEC (46,7% câu ≥4 block so với 0,8%) — mọi kết quả đánh giá trên test phải đọc kèm đặc điểm này; test về bản chất **khó hơn** phân phối VSEC.
-- Aligner đủ tin cậy để làm pseudo-annotation (~96% agreement với gold), tuy nhiên sai số ~4% tồn tại — xem mục 9 (hạn chế).
+- Aligner đủ tin cậy để làm pseudo-annotation (~96% agreement với gold), tuy nhiên sai số ~4% tồn tại — xem mục 10 (hạn chế).
 - QA 50 mẫu soát tay cho thấy bản sửa của test có cả lỗi thật (telex/vni kiểu `dduwợc`, `nhưbg`), lỗi gõ nhầm phím vùng miền (`cko`→`cho`, `fó`→`phó`), và một số edit phi chính tả (chèn số liệu, viết tắt `BHXH`) — nhất quán với nguồn báo chí.
 
 ---
@@ -243,16 +250,56 @@ Stratified val (recall): non-word — Identity 0% / Zero-shot 4,73% / R1 75,68% 
 
 ---
 
-## 7. Tổng hợp phát hiện chính (cross-phase)
+## 7. Phase 2 (Bước 1) — `nb4-error-analysis.ipynb` (+ `nb4b`): error analysis & adjudication pseudo-gold
+
+### 7.1. Đã làm gì
+
+- Notebook **eval-only, CPU** (không model, không train, không GPU): tái tạo **đúng semantics** `evaluate_predictions` của nb3 ở mức per-position events, đối chiếu **tuyệt đối** với `eval_report.json` — **CONSISTENCY CHECK PASS 4/4 set** (val/test × run1/run2) trước khi tin các bảng; sanity 7/7 case nhân tạo PASS; đối chiếu gold block tính tại chỗ vs `error_count` nb1: **0/5.983 lệch**.
+- Phân tích 7 câu hỏi (Q1–Q7) từ **prediction có sẵn** của nb3: `{val,test} × {run1,run2}` (lần chạy này không attach Input zero-shot → không có cột nb3b).
+- **Adjudication pseudo-gold (Q7)**: xuất 100 mẫu suspect stratified theo `edit_ratio` (seed 42; strata 88/10/2 trên pool suspect **2.316 câu = 38,7% test**) → `nb4b` điền nhãn A/B/C/D bằng LLM TypeSafe (primitive **Choice**, model `jev-latest`; pilot gate 10 mẫu; mỗi nhãn kèm `llm_confidence`) → upload làm Input → re-run nb4 tính nhiễu + Wilson CI.
+- Xuất `error_analysis_report.json`, `adjudication_samples.json`.
+
+### 7.2. Kết quả Q1–Q7 (TEST · Run 2 nếu không ghi chú)
+
+| Q | Câu hỏi | Kết quả chính |
+|---|---|---|
+| Q1 | Sai ở non-word hay real-word? | CorrAcc@TP: non-word **67,57%** (10.591/15.673) · real-word **69,84%** (2.100/3.007) — chênh nhỏ; detection recall non-word 77,09% > real-word 66,02% |
+| Q2 | Bỏ sót khi câu dày lỗi? | **Ngược giả thuyết ban đầu**: recall *tăng* theo mật độ — 1 lỗi/câu 70,87% < 2 lỗi 73,12% < 3 lỗi 75,10% < ≥4 lỗi 75,49%; câu thưa lỗi mới là điểm yếu |
+| Q3 | FP deletion chiếm bao nhiêu? | **45,4%** (1.304/2.872 FP; Run 1: 54,2%) · merge 27,3% · multi 23,5% · substitute 3,6% · insert 0 |
+| Q4 | TP sửa sai thành gì? | **77,2% là âm tiết hợp lệ** — thay nhầm từ thật (4.622/5.989) · deletion 11,6% · non-word tgt 10,7% · same_as_src 0,2% |
+| Q5 | FN là copy thuần? | Chỉ **7,6%** pure-copy; **92,2%** FN ở câu model *có* sửa, cách edit gần nhất TB **6,5 token** → **under-editing**, không phải nhầm vị trí kề |
+| Q6 | Bias vị trí/độ dài? | Yếu: recall 74,7–76,4% giữa các bucket vị trí; câu ngắn <15 token CorrAcc thấp nhất (59,6%) |
+| Q7 | Pseudo-gold nhiễu bao nhiêu? | Xem 7.3 |
+
+**Pattern bất ngờ từ T3/T7 (đầu vào trực tiếp cho Bước 2):**
+
+- Token bị xóa oan **không ngẫu nhiên** — dấu câu `,` (×101) và **một họ âm tiết lặp lại**: `tòa` ×49, `họa` ×31, `khỏe` ×28, `hòa/thỏa/khóa/hủy/ủy/dọa/thủy` ×14–27 — chính họ token xuất hiện trong các ví dụ phá câu sạch (`Biếm họa → Biếm`, `thủy tinh → tinh`, `tòa án → án`) → khả năng lỗi hệ thống (tokenization/âm tiết hiếm dấu), chặn được bằng rule tất định.
+- FP non-delete có **phrase "ám ảnh" lặp lại**: `'F Paris'` ×216, `'Nguwo'` ×95, `'Đ'` ×60 — cần soát xem có dồn ở vài câu nguồn hay không (chưa xử lý lần này).
+
+### 7.3. Adjudication + audit người (Q7)
+
+- Nhãn LLM (nb4b): **99A / 1C** → nhiễu pseudo-gold (B+D) = **0,0%**, Wilson 95% CI [0; 3,7%], n=100 **— đã audit người 25 mẫu blind, đồng thuận 25/25** — dưới ngưỡng pre-registered 8% → **không cần caveat** cho các chỉ số TEST theo quy tắc nb4 §6.
+- **Hạn chế phải ghi rõ**: nhãn đến từ **một annotator LLM duy nhất**; gần như đồng thuận tuyệt đối trên nhóm *suspect* là kết quả "sạch bất thường" → chưa đủ để chốt trước khi có đồng thuận người.
+- **Sửa diễn giải sensitivity (nb4, 24/09)**: dòng in cũ `F1 76,43% → 78,29% (loại 5.883 câu B/D)` gây hiểu nhầm — đó là metric tính lại trên **đúng 100 câu được adjudicate** (subset suspect edit-dày), **không phải** metric trên test sau khi loại câu nhiễu (wording đã sửa, không đổi số). Diễn giải đúng: 0/100 nhiễu → cận trên Wilson 3,7% → ngoại suy ≤ ~86/2.316 câu suspect (≈1,4% test) → ảnh hưởng cận trên đến chỉ số test ở mức **sub-1%**.
+- **Audit người 25 mẫu blind (`nb4c`, pre-registered — hoàn tất 24/09)**: thiết kế gốc 2 low-confidence + toàn bộ stratum `>=0.5` + nhãn C + random seed-42; thực tế chạy phương án suy biến vì local chưa có `adjudication_filled.json` khi chọn mẫu — **25 mẫu = 23 random + toàn bộ stratum `>=0.5`** (2 mẫu edit-dày nhất, nhóm rủi ro non-parallel cao). Kết quả: **binary consensus 25/25 (100%) · full-label agreement 25/25** (nhầm lẫn chỉ có A→A) → quyết định pre-registered **accept: chốt nhiễu 0,0% (human-audited)** — không mở rộng 100 mẫu, không phát sinh `adjudication_filled_v2.json`. Hạn chế ghi nhận: audit là 1 annotator × 1 LLM (không phải đa annotator); mẫu nhãn C (1/100) nằm ngoài 25 mẫu nhưng C không tính là nhiễu theo rubric.
+
+### 7.4. Phát hiện chính
+
+1. **Val ≠ test về thành phần lỗi**: suy từ T1, gold positions trên test ≈ **81,7% non-word** (≈20.330/24.885) so với val ≈ 26% (khớp non-word rate 22,7% của VSEC ở Pilot 1) — giải thích phần lớn gap CorrAcc val→test (86,5% → 67,9%); lưu ý proxy non-word đếm cả từ ngoại/tên riêng tiếng Anh (xem mục 10).
+2. **Deletion FP là lỗi hệ thống có pattern** — mục tiêu can thiệp rẻ nhất hiện tại: post-processing tất định, không cần train lại.
+3. **Under-editing là nút cổ chai recall**: model chỉ sửa vài vị trí nổi bật/câu; recall thấp nhất ở câu 1 lỗi (70,9%).
+4. **Run 2 (augmentation) không đánh đổi sang hại**: over-correction 1,82% → 1,88%; Clean Retention 86,68% → 85,91% (92/653 câu sạch bị phá, trong đó **106/135 FP positions là deletion** — nhất quán với pattern T3).
+
+## 8. Tổng hợp phát hiện chính (cross-phase)
 
 1. **Nền dữ liệu sạch, chống leakage đúng quy trình** (`DESIGN.md` §9): dedupe trước chia tập, split theo câu stratified seed 42, 3 invariant PASS, augmentation/bảng âm tiết chỉ dùng nguồn train hoặc nguồn công khai độc lập. Dedupe chéo VSEC↔test chỉ 0 trùng.
 2. **Bộ test tự thu có 10,9% câu sạch nhưng dày lỗi hơn hẳn VSEC** (46,7% câu ≥4 block vs 0,8%): mọi số liệu trên test phải đọc kèm đặc điểm này; test khó hơn phân phối VSEC rõ rệt (correction acc tụt ~18 điểm val→test).
 3. **Trục kiến trúc có lời giải sớm**: non-word rate 22,7% < 40% → bỏ hướng hybrid từ điển (C) làm trục chính; seq2seq giữ vai trò trung tâm, hướng pipeline bảo thủ (A) vẫn là ứng viên nếu xử lý FP deletion.
 4. **Augmentation là lever rẻ và hiệu quả**: +2×2.502 câu (sạch + nhiễu) → F1 test +4,0 điểm, recall +6,3 điểm; đồng thời duy trì Clean Retention ~86%.
 5. **Over-correction không phải vấn đề nghiêm trọng trên bộ test này** (1,8–1,9% < 2–3%) và có sẵn ở base model → hạ ưu tiên "chống over-correction", chuyển sang nâng recall/correction accuracy.
-6. **Điểm yếu còn mở**: correction accuracy trên test còn thấp (66–68%); FP deletion của model; noise model chưa hiệu chuẩn (non-word sinh 51,6% vs thật 23,4% — lệch 28,2 điểm).
+6. **Điểm yếu còn mở**: correction accuracy trên test còn thấp (66–68%); FP deletion của model (nb4 định lượng: 45,4% tổng FP Run 2, có pattern cụ thể — xem mục 7); noise model chưa hiệu chuẩn (non-word sinh 51,6% vs thật 23,4% — lệch 28,2 điểm).
 
-## 8. Trạng thái lộ trình & bước tiếp theo đề xuất (Phase 2)
+## 9. Trạng thái lộ trình & bước tiếp theo đề xuất (Phase 2)
 
 Theo lộ trình `DESIGN.md` §4 và bảng quy tắc quyết định §5:
 
@@ -261,19 +308,24 @@ Theo lộ trình `DESIGN.md` §4 và bảng quy tắc quyết định §5:
 | Over-correction baseline 1,82–1,88% (test) | < 2–3% → "không nghiêm trọng" | Không dồn lực chống over-correction; ưu tiên phân tích stratified sâu |
 | Non-word rate 22,7% | < 40% → "bỏ C sớm" | Bỏ hybrid từ điển (C) làm trục chính; (tùy chọn) giữ làm ablation nhỏ |
 | Augmentation F1 test +4,0 điểm | — | Giữ augmentation làm thành phần mặc định; hiệu chỉnh noise model (lệch 28,2 điểm) trước khi scale tỷ lệ pha |
-| FP pattern deletion | — | Phân tích/post-processing chống deletion; cân nhắc pipeline bảo thủ (A) |
+| FP pattern deletion = 45,4% tổng FP Run 2, có pattern lặp (nb4) | Trần lý thuyết +2,33 F1 nếu chặn hết delete-FP (precision 86,7% → 92,3%) | **Bước 2 — post-processing**: punctuation guard · veto delete trên âm tiết hợp lệ · blacklist phrase từ val; derive/tune trên val, áp frozen lên test |
 
-Việc còn mở (không bắt buộc, theo `DESIGN.md`): full-FT ablation 1 lần cuối; factorial 2×2 hai trục nếu kịp thời gian; phê duyệt phạm vi Phase 2.
+Kế hoạch Bước 2 (chốt 24/09, nhật ký `DESIGN.md` §12): (1) post-processing chống deletion như bảng trên — rule tất định gold-agnostic, chống leakage đúng `DESIGN.md` §9; (2) **Run 3** noise hiệu chỉnh giữ mục tiêu non-word **23–25%** (không tối theo thành phần ~82% non-word đo được trên test — tránh test-peeking, chỉ report stratified); (3) tùy chọn eval-only: **multi-pass inference** cho under-editing (92% FN — nb4 §7.2); (4) full-FT ablation theo quota.
 
-## 9. Hạn chế của đo lường (đọc kết quả cần lưu ý)
+Việc còn mở (không bắt buộc, theo `DESIGN.md`): full-FT ablation 1 lần cuối; factorial 2×2 hai trục nếu kịp thời gian.
+
+## 10. Hạn chế của đo lường (đọc kết quả cần lưu ý)
 
 - **Metric trên test dựa trên pseudo-annotation** do aligner suy ra (đã kiểm chứng ~96% agreement với gold VSEC, roundtrip 100%) — nhưng không phải gold thật; sai số ~4% của aligner nằm trong cả gold lẫn prediction trên test.
 - **Clean Retention trên val chỉ có 3 câu sạch** (VSEC 100% câu có lỗi) — không có ý nghĩa thống kê; con số đáng tin là trên test (653 câu). Số tuyệt đối val/test trong bảng 5.2 được suy từ tỷ lệ × số câu sạch.
 - **Stratified gold nhỏ**: 296 non-word / 847 real-word trên val — chênh lệch vài điểm % giữa Run 1/Run 2 chưa đủ kết luận thống kê.
 - **Số liệu là snapshot** các lần chạy Kaggle 22–23/09/2026 (seed 42, greedy decode); re-run có thể lệch nhỏ do phi tất định phần cứng.
-- Bộ test 6k chỉ có `text` + `label` tự thu thập; chất lượng bản sửa của test là pseudo-gold (đã QA soát tay 50 mẫu, tỷ lệ suspect 38,7% được đo nhưng chưa adjudicate).
+- Bộ test 6k chỉ có `text` + `label` tự thu thập; chất lượng bản sửa của test là pseudo-gold: đã adjudicate 100 mẫu suspect bằng LLM (nhiễu 0,0%, CI95 [0; 3,7%]) và **audit người 25 mẫu blind đã hoàn tất với đồng thuận 25/25** (`nb4c`, xem mục 7.3) — lưu ý vẫn là 1 annotator × 1 LLM, không phải đa annotator.
+- **Sensitivity của nb4 không phải exclusion trên test**: số "F1 76,43% → 78,29%" là metric tính lại trên đúng 100 câu được adjudicate (subset suspect edit-dày), không phải trên test sau khi loại câu nhiễu (wording đã sửa 24/09 — xem mục 7.3).
+- **Proxy non-word là phép đo gián tiếp**: phân loại theo bảng âm tiết 7.884 nên từ ngoại/tên riêng tiếng Anh (`hacktivisme`, `Preferences`…) cũng bị đếm là non-word — thành phần ~82% non-word trên test cần đọc với hạn chế này (val ~26%, khớp Pilot 1 22,7%).
+- **Kết quả external nb5 (mục 12) đọc kèm 3 hạn chế**: (1) bench `eval-real` chỉ n=150 (CI bootstrap rộng ±4–6pp) và word acc là **định nghĩa tự có của nb5** — chỉ so hướng (ordinal) với anchor công bố của họ; (2) phần A là **re-run inference** của adapter nb3 (greedy) — có thể lệch nhỏ so với run gốc do hardware nondeterminism; (3) Hướng B còn **confound đã ghi nhận, không loại trừ**: khả năng một phần câu test trùng (dạng sạch) với corpus Wiki+news 600K của họ — quyết định 24/09 **bỏ cross-dedupe** (tập trung pipeline nội bộ): kết luận so sánh chỉ ở mức định hướng, không dùng để tuyên bố tuyệt đối.
 
-## 10. Danh mục artifact đã sinh (output Kaggle)
+## 11. Danh mục artifact đã sinh (output Kaggle)
 
 | Notebook | File output |
 |---|---|
@@ -282,5 +334,59 @@ Việc còn mở (không bắt buộc, theo `DESIGN.md`): full-FT ablation 1 l�
 | nb2 | `syllable_table.json`, `noise_model.json`, `noise_qa_samples.json`, `pilot_report.json` |
 | nb3 | `predictions_val_run{1,2}.jsonl`, `predictions_test_run{1,2}.jsonl`, `eval_report.json`, `lora_adapter_run{1,2}/` |
 | nb3b | `predictions_val_zeroshot.jsonl`, `predictions_test_zeroshot.jsonl`, `zeroshot_eval_report.json` |
+| nb4 | `error_analysis_report.json`, `adjudication_samples.json` |
+| nb4b | `adjudication_filled.json`, `review_queue.json` |
+| nb5 | `predictions_evalreal_run{1,2}.jsonl`, `predictions_test_nomvnbase.jsonl`, `external_bench_report.json` |
 
-Các artifact nằm ở `/kaggle/working` của từng notebook Kaggle (đã dùng làm Input nối tiếp nb0 → nb1 → nb2/nb3 → nb3b); repo hiện chỉ chứa mã notebook + tài liệu.
+Artifact audit cục bộ (nb4c, chạy tại repo): `data/audit_samples.json` (25 mẫu blind) → `data/audit_filled.json` (nhãn người, 25/25 — đồng thuận với nhãn LLM) → `adjudication_filled_v2.json` không phát sinh (không có lệch nhãn).
+
+Các artifact nằm ở `/kaggle/working` của từng notebook Kaggle (đã dùng làm Input nối tiếp nb0 → nb1 → nb2/nb3 → nb3b → nb4/nb4b → nb5); repo hiện chỉ chứa mã notebook + tài liệu + artifact audit cục bộ.
+
+## 12. Đối sánh external với NomVN (`nb5-external-eval.ipynb`, eval-only)
+
+> Chạy 24/09/2026 trên Kaggle (T4, fp16; hạ tầng phải downgrade `transformers<5` — bug v5 với tokenizer sentencepiece, đúng khuyến nghị cài đặt của NomVN). Đối chiếu hai hướng: **A** — model của ta trên benchmark ngoài của họ; **B** — model công khai của họ trên test 6k của ta. Pre-registered: eval-only tuyệt đối, không tune bất cứ gì theo bench.
+
+### 12.1. Thiết lập
+
+- **Hướng A**: LoRA adapter Run 1 + Run 2 (nb3) trên `nrl-ai/vn-spell-correction-eval-real` (**CC0**, 150 cặp hand-curated, 6 register × 25 câu: forum / mobile / news_real / legal_real / ocr / telex_real) → word acc + sentence exact (bootstrap CI 95%, seed 42, n=1000 resample) + bộ 3 chỉ số qua pseudo-annotation `align-v1`. Tính toàn vẹn: roundtrip PASS 150/150, `align_failed=0`, 10 câu sạch, identity floor word acc **51,96%** (bench dày lỗi nặng).
+- **Hướng B**: `nrl-ai/vn-spell-correction-base` (Apache-2.0, ViT5-base 220M, revision `ba1e57f`) trên test 6k — cùng gold `align-v1` với nb3/nb4; truncate 12/5.983 câu (0,2%), empty preds 0%.
+- Word acc là **định nghĩa tự có của nb5** (align token canonical; equal / clean-tokens) — so anchor công bố chỉ theo hướng (ordinal).
+
+### 12.2. Hướng A — model của ta trên eval-real
+
+| | Word acc [CI95] |
+|---|---|
+| Identity floor | 51,96% [46,96–57,26] |
+| **Run 1** | **55,65%** [50,20–61,39] |
+| **Run 2** | **55,54%** [50,29–60,93] |
+
+Anchor công bố của NomVN (WA của họ): nrl base 79,62 · small 77,55 · Toshiiiii1 77,40 · qthuan 72,42 · chamdent 51,69 · bmd1905 49,21 · iAmHieu 45,57 → Run 1/Run 2 (≈55,6%) hơn hẳn nhóm dưới (45–49%) nhưng cách xa nhóm trên (72–80%) và **chỉ +3,6pp trên identity floor**.
+
+Bộ 3 chỉ số trên eval-real (Run 2): Detection P 96,04% · **R 19,64%** · F1 32,61% · CorrAcc@TP 24,31% · Over-correction 0,92% → **under-edit nặng ngoài phân phối** (bảo thủ tới mức bỏ sót ~4/5 vị trí lỗi).
+
+Per-register (WA Run1/Run2 · F1 Run1/Run2): forum 78,4/79,3% · 42,2/52,1% — mobile 97,3/96,8% · 66,7/64,0% — legal_real 59,6/56,6% · 39,1/32,8% — ocr 53,4/53,5% · 33,5/29,2% — **news_real 30,8/31,1% · 17,5/18,7%** — **telex_real 14,4/15,9% · 32,4/39,4%**.
+
+**Giả thuyết pre-registered "news/legal cạnh tranh" bị PHẢN BÁC**: news_real tệ nhất (WA 31%) dù trùng domain báo chí — slice này dày **lỗi Telex/VNI nhiều phím** (`đuwowjc`, `cafng`, `trfọ`, `chiêu đã9i`) mà noise model/VSEC không covering. **Domain khớp ≠ kiểu lỗi khớp.** Điểm yếu Telex nay được xác nhận trên cả bench ngoài lẫn bench trong (QA mẫu Hướng B bên dưới).
+
+### 12.3. Hướng B — nomvn-base trên test 6k của ta
+
+| Chỉ số (test 6k) | Run 2 (nb3) | nomvn-base |
+|---|---|---|
+| Detection Precision | 86,67% | 88,62% |
+| Detection Recall | 75,07% | **85,94%** |
+| Detection F1 | 80,45% | **87,26%** |
+| Correction Acc @TP | 67,94% | 67,58% |
+| Over-correction Rate | 1,88% | 1,80% |
+| Clean Retention | 85,91% | **95,10%** |
+| Word acc | 93,14% | **94,80%** |
+
+→ "545K synthetic + full-FT" thắng "8.3K lỗi thật + augmentation nhỏ" trên sân nhà ta, chủ yếu nhờ **recall (+10,9 điểm)** và Clean Retention (+9,2 điểm); CorrAcc@TP và over-correction ngang bằng.
+
+**Confound đã ghi nhận — quyết định KHÔNG cross-dedupe (24/09)**: corpus train của họ = Wiki+news+legal 600K; test 6k của ta nguồn web/báo → khả năng một phần câu test nằm (dạng sạch) trong corpus của họ là có thật (guard anti-leak của họ chỉ áp cho eval set của chính họ). Quyết định của người dùng: **bỏ cross-dedupe, tập trung pipeline nội bộ** — so sánh hai hướng giữ ở **mức định hướng**, không dùng để tuyên bố tuyệt đối; confound này là hạn chế đã công bố (mục 10). QA mẫu cho thấy model họ cũng không sửa được Telex-heavy trên test (`vowj`, `đuwowj`, `hoom` giữ nguyên) — nhất quán với 12.2 và với quan sát của chính họ ("Telex là điểm yếu chung").
+
+### 12.4. Hệ quả quyết định (nhật ký `DESIGN.md` §12)
+
+1. **Mở gate rule Telex/VNI cho Run 3** (P2 → thành phần của Run 3): bằng chứng hai chiều từ bench ngoài + bench trong, không phải test-peeking; khi implement vẫn kiểm thống kê `correction_pairs` train.
+2. Vị thế đồ án không đổi: đóng góp = **phương pháp đánh giá** (bộ 3 chỉ số position-level, aligner kiểm chứng, adjudication + human audit) + phân tích lỗi thật — không đua scale dữ liệu.
+3. **Run 4 (synthetic-scaled) vẫn HOÃN** — cân nhắc sau Run 3 theo quota; adapter Telex từ `nom.text.noise` giữ ở P2 (license repo `nrl-ai/nom-vn` chưa xác nhận — có thể tự cài rule thay thế).
+4. **Bỏ cross-dedupe test 6k ↔ corpus train của họ** (quyết định 24/09 — tập trung pipeline nội bộ): so sánh external giữ ở mức định hướng; confound trùng corpus chuyển thành hạn chế đã công bố (mục 10), không còn là việc đang chờ.
