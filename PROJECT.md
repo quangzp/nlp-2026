@@ -133,7 +133,8 @@ Không chỉ báo cáo accuracy tổng thể. Cần tách riêng:
 - [x] Triển khai `nb3-baseline-train-eval.ipynb` trên Kaggle 2× T4 (22–23/09/2026): Run 1 thuần + Run 2 augmentation — Detection F1 test 76,43% → 80,45%, over-correction 1,82–1,88% (< ngưỡng 2–3%).
 - [x] Triển khai `nb3b-zeroshot-baseline.ipynb` (eval-only, 22–23/09/2026): Identity + Zero-shot — fine-tune đóng góp lớn (F1 val 9,41% → 76,16%); over-correction có sẵn ở base model (zero-shot 1,56%).
 - [x] Đối sánh external với NomVN (`nb5`, eval-only, 24/09/2026): Run 1/Run 2 trên bench ngoài `eval-real` (WA ≈55,6%; identity floor 51,96%; nhóm dẫn đầu 77–80%) + `nomvn-base` trên test 6k (Detection F1 87,26% > 80,45% — so sánh định hướng; confound trùng corpus ghi nhận làm hạn chế) → mở gate rule Telex/VNI cho Run 3 (chi tiết REPORT.md mục 12).
-- [ ] Phase 2: hiệu chỉnh noise model (lệch 28,2 điểm) → Run 3; post-processing chống FP deletion; (tùy quota) full-FT ablation.
+- [x] Phase 2 (Bước 2) hoàn thành (`nb6` + `nb7`, 25/09/2026): post-processing chống FP deletion **ĐẠT pre-registered** — chọn G3-r1r2-r3k1 tune trên val Run 2 (+4,69 F1 val), frozen lên test ΔF1 +0,93 (~40% trần +2,33) · over-corr 1,88% → ≈1,46% · CleanRet ≈96,5% · Run 1 robustness PASS → nhận làm thành phần mặc định; Run 3 (noise v2 hiệu chỉnh 27,0% + gate Telex PASS 14,6% nhưng telex_share=0) **KHÔNG thắng Run 2** (78,68% raw · 79,78% +PP < 81,38%) → hủy Run 4; lỗ hổng Telex giữ là giới hạn đã công bố (chi tiết REPORT.md mục 13).
+- [ ] Còn lại (tùy chọn theo quota): multi-pass inference cho under-editing (92% FN); full-FT ablation 1 lần; tổng hợp báo cáo môn học. **Cấu hình cuối đồ án: Run 2 + post-processing — Detection F1 test ≈ 81,38% · over-correction ≈ 1,46% · Clean Retention ≈ 96,5%.**
 
 ---
 
